@@ -1,5 +1,7 @@
 # homebridge-roku-platform
 
+This plugin started by wanting to fully utelize the "Power State" information of a Roku TV. The other available plugins did not pull the state of the TV even though that is available. Most other states are not available but power is one you can automate reliably.
+
 To install:
 
     npm install -g homebridge-roku-platform
