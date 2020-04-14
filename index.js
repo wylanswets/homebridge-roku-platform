@@ -39,7 +39,7 @@ function RokuTVPlatform(log, config, api) {
                     self.addRoku(clients[i], maxVolume);
                 }
                 self.pollStatus();
-                console.log("done loading");
+                // console.log("done loading");
             })
 
             
