@@ -1,0 +1,31 @@
+{
+  "name": "homebridge-roku-power",
+  "version": "0.0.1",
+  "main": "index.js",
+  "dependencies": {
+    "roku-client": "^3.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "keywords": [
+    "homebridge",
+    "homebridge-plugin"
+  ],
+  "author": "Wylan Swets",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wylanswets/homebridge-roku-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wylanswets/homebridge-roku-platform/issues"
+  },
+  "homepage": "https://github.com/wylanswets/homebridge-roku-platform#readme",
+  "description": ""
+}
