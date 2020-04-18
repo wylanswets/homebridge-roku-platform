@@ -68,18 +68,34 @@ RokuTV.prototype.setupPower = function() {
                     callback(null, state);
                 })
         })
-        .on('set', (value, callback, context) => {
-            // console.log("Context: " + context);
-            if(context !== 'internal') {
-                this.roku
-                .keypress('Power')
-                .then(() => callback(null))
-                .catch(callback);
-            } else {
-                callback(null);
-            }
-            
-        });
+        .on('set', this.setPower.bind(this));
+}
+
+RokuTV.prototype.setPower = function(value, callback, context) {
+
+    if(context !== 'internal') {
+        
+        this.roku
+                .info().then((info) => {
+                    var state = info.powerMode == 'PowerOn' ? true : false;
+
+                    if(value === state) {
+                        //Do nothing
+                        callback(null);
+                    } else {
+                        //send power signal
+                        this.log.debug();
+                        this.roku
+                            .keypress('Power')
+                            .then(() => callback(null))
+                            .catch(callback);
+                    }
+
+                });
+
+    } else {
+        callback(null);
+    }
 }
 
 // RokuTV.prototype.setupVolume = function() {
