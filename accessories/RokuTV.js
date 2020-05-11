@@ -18,8 +18,22 @@ function RokuTV(log, accessory, roku, info, maxVolume) {
 RokuTV.prototype = Object.create(RokuTV.prototype);
 
 RokuTV.prototype.setup = function() {
+
+    //TODO remove switch service
+    var switchCheck = this.accessory.getService(global.Service.Switch);
+    if(switchCheck !== undefined) {
+        this.accessory.removeService(global.Service.Switch);
+    }
+
+    //TODO add Television service
+    var tvService = this.accessory.getService(global.Service.Television);
+    if(tvService === undefined) {
+        this.accessory.addService(global.Service.Television);
+    }
+
     this.accessoryInfo();
-    this.setupPower();
+    this.setupTV();
+    // this.setupPower();
     // this.setupVolume();
 }
 
@@ -51,6 +65,80 @@ RokuTV.prototype.statusInterval = function() {
 
     
 }
+
+RokuTV.prototype.setupTV = function() {
+    // this.addCharacteristic(Characteristic.Active);
+    // this.addCharacteristic(Characteristic.ActiveIdentifier);
+    // this.addCharacteristic(Characteristic.ConfiguredName);
+    // this.addCharacteristic(Characteristic.RemoteKey);
+    // this.addCharacteristic(Characteristic.SleepDiscoveryMode);
+
+    var TV = this.accessory.getService(global.Service.Television);
+    TV.getCharacteristic(global.Characteristic.Active)
+        .on('get', this.getActive.bind(this))
+        .on('set', this.setActive.bind(this));
+
+    TV.getCharacteristic(global.Characteristic.ActiveIdentifier)
+        .on('get', this.getActiveIdentifier.bind(this))
+        .on('set', this.setActiveIdentifier.bind(this));
+
+    TV.getCharacteristic(global.Characteristic.ConfiguredName)
+        .on('get', this.getConfiguredName.bind(this))
+        .on('set', this.setConfiguredName.bind(this));
+
+    // TV.getCharacteristic(global.Characteristic.RemoteKey)
+    //     .on('set', this.setRemoteKey.bind(this));
+
+    // TV.getCharacteristic(global.Characteristic.SleepDiscoveryMode)
+    //     .on('get', this.getSleepDiscoveryMode.bind(this));
+    
+}
+
+RokuTV.prototype.getActive = function(callback) {
+    var char = global.Characteristic.Active;
+
+    console.log("getting active");
+    callback(char.INACTIVE);
+}
+
+RokuTV.prototype.setActive = function(value, callback) {
+    var char = global.Characteristic.Active;
+    switch(value) {
+        case char.ACTIVE:
+            console.log("set active");
+            break;
+        case char.INACTIVE:
+            console.log("set inactive");
+            break;
+
+    }
+    callback(null);
+}
+
+RokuTV.prototype.getActiveIdentifier = function(callback) {
+    // var char = global.Characteristic.ActiveIdentifier;
+    console.log('getting active identifier');
+    callback(0);
+
+}
+
+RokuTV.prototype.setActiveIdentifier = function(value, callback) {
+    console.log("setting active identifier: " + value);
+    callback(null);
+}
+
+RokuTV.prototype.getConfiguredName = function(callback) {
+    // var char = global.Characteristic.ActiveIdentifier;
+    console.log('getting configured name');
+    callback("test");
+
+}
+
+RokuTV.prototype.setConfiguredName = function(value, callback) {
+    console.log("setting configured name: " + value);
+    callback(null);
+}
+
 
 RokuTV.prototype.setupPower = function() {
 

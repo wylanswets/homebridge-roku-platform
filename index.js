@@ -84,7 +84,7 @@ RokuTVPlatform.prototype.registerRokuDevice = function(roku, info, maxVolume) {
     var name = info.friendlyDeviceName == '' ? "Roku TV" : info.friendlyDeviceName;
     var acc = new Accessory(name, uuid);
     
-    acc.addService(Service.Switch);
+    // acc.addService(Service.Switch);
     // acc.addService(Service.Lightbulb);
 
     this.accessories[uuid] = new RokuTV(this.log, acc, roku, info, maxVolume);
