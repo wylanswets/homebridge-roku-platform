@@ -75,55 +75,75 @@ RokuTV.prototype.setupTV = function() {
 
     var TV = this.accessory.getService(global.Service.Television);
     TV.getCharacteristic(global.Characteristic.Active)
-        .on('get', this.getActive.bind(this))
-        .on('set', this.setActive.bind(this));
+        .on('get', this.getPowerState.bind(this))
+        .on('set', this.setPowerState.bind(this));
 
     TV.getCharacteristic(global.Characteristic.ActiveIdentifier)
-        .on('get', this.getActiveIdentifier.bind(this))
-        .on('set', this.setActiveIdentifier.bind(this));
+        .on('get', this.getChannel.bind(this))
+        .on('set', this.setChannel.bind(this));
 
     TV.getCharacteristic(global.Characteristic.ConfiguredName)
         .on('get', this.getConfiguredName.bind(this))
         .on('set', this.setConfiguredName.bind(this));
 
-    // TV.getCharacteristic(global.Characteristic.RemoteKey)
-    //     .on('set', this.setRemoteKey.bind(this));
+    TV.getCharacteristic(global.Characteristic.RemoteKey)
+        .on('set', this.setRemoteKey.bind(this));
 
     // TV.getCharacteristic(global.Characteristic.SleepDiscoveryMode)
     //     .on('get', this.getSleepDiscoveryMode.bind(this));
     
 }
 
-RokuTV.prototype.getActive = function(callback) {
+RokuTV.prototype.getPowerState = function(callback) {
     var char = global.Characteristic.Active;
 
     console.log("getting active");
-    callback(char.INACTIVE);
+    this.roku
+    .info().then((info) => {
+        var currentState = info.powerMode == 'PowerOn' ? char.ACTIVE : char.INACTIVE;
+
+        callback(currentState);
+    });
 }
 
-RokuTV.prototype.setActive = function(value, callback) {
+RokuTV.prototype.setPowerState = function(value, callback, context) {
     var char = global.Characteristic.Active;
-    switch(value) {
-        case char.ACTIVE:
-            console.log("set active");
-            break;
-        case char.INACTIVE:
-            console.log("set inactive");
-            break;
+    
+    if(context !== 'internal') {
+        
+        this.roku
+                .info().then((info) => {
+                    var currentState = info.powerMode == 'PowerOn' ? char.ACTIVE : char.INACTIVE;
 
+                    if(value === currentState) {
+                        //Do nothing
+                        callback(null);
+                    } else {
+                        console.log('Set power to: ' + value);
+                        //send power signal
+                        this.log.debug();
+                        this.roku
+                            .keypress('Power')
+                            .then(() => callback(null))
+                            .catch(callback);
+                    }
+
+                });
+
+    } else {
+        callback(null);
     }
-    callback(null);
 }
 
-RokuTV.prototype.getActiveIdentifier = function(callback) {
+RokuTV.prototype.getChannel = function(callback) {
     // var char = global.Characteristic.ActiveIdentifier;
-    console.log('getting active identifier');
+    console.log('getting active identifier "Channel"');
     callback(0);
 
 }
 
-RokuTV.prototype.setActiveIdentifier = function(value, callback) {
-    console.log("setting active identifier: " + value);
+RokuTV.prototype.setChannel = function(value, callback) {
+    console.log('setting active identifier "Channel": ' + value);
     callback(null);
 }
 
@@ -135,8 +155,61 @@ RokuTV.prototype.getConfiguredName = function(callback) {
 }
 
 RokuTV.prototype.setConfiguredName = function(value, callback) {
-    console.log("setting configured name: " + value);
+    console.log('setting configured name: ' + value);
     callback(null);
+}
+
+RokuTV.prototype.setRemoteKey = function(key, callback) {
+    var value = '';
+
+    switch (key) {
+        case Characteristic.RemoteKey.REWIND:
+          value = 'REV';
+          break;
+        case Characteristic.RemoteKey.FAST_FORWARD:
+          value = 'FWD';
+          break;
+        case Characteristic.RemoteKey.NEXT_TRACK:
+          value = 'RIGHT';
+          break;
+        case Characteristic.RemoteKey.PREVIOUS_TRACK:
+          value = 'LEFT';
+          break;
+        case Characteristic.RemoteKey.ARROW_UP:
+          value = 'UP';
+          break;
+        case Characteristic.RemoteKey.ARROW_DOWN:
+          value = 'DOWN';
+          break;
+        case Characteristic.RemoteKey.ARROW_LEFT:
+          value = 'LEFT';
+          break;
+        case Characteristic.RemoteKey.ARROW_RIGHT:
+          value = 'RIGHT';
+          break;
+        case Characteristic.RemoteKey.SELECT:
+          value = 'SELECT';
+          break;
+        case Characteristic.RemoteKey.BACK:
+          value = 'BACK';
+          break;
+        case Characteristic.RemoteKey.EXIT:
+          value = 'BACK';
+          break;
+        case Characteristic.RemoteKey.PLAY_PAUSE:
+          value = 'PLAY';
+          break;
+        case Characteristic.RemoteKey.INFORMATION:
+          value = 'INFO';
+          break;
+      }
+
+      console.log('setting remote key: ' + value);
+
+      this.roku
+                .keypress(value)
+                .then(() => callback(null))
+                .catch(callback);
 }
 
 
