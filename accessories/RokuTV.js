@@ -33,6 +33,9 @@ RokuTV.prototype.setup = function() {
 
     this.accessoryInfo();
     this.setupTV();
+
+    this.setupSpeaker();
+
     // this.setupPower();
     // this.setupVolume();
 }
@@ -94,6 +97,38 @@ RokuTV.prototype.setupTV = function() {
         Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
       );
     
+}
+
+RokuTV.prototype.setupSpeaker = function() {
+
+    // // Required Characteristics
+    // this.addCharacteristic(Characteristic.Mute);
+
+    // // Optional Characteristics
+    // this.addOptionalCharacteristic(Characteristic.Active);
+    // this.addOptionalCharacteristic(Characteristic.Volume);
+    // this.addOptionalCharacteristic(Characteristic.VolumeControlType);
+    // this.addOptionalCharacteristic(Characteristic.VolumeSelector);
+
+    var TVSpeaker = this.accessory.getService(global.Service.TelevisionSpeaker);
+
+    if(TVSpeaker === undefined) {
+        this.accessory.addService(global.Service.TelevisionSpeaker);
+        TVSpeaker = this.accessory.getService(global.Service.TelevisionSpeaker);
+    }
+
+    TVSpeaker.getCharacteristic(global.Characteristic.Mute)
+        .on('get', this.getMute.bind(this))
+        .on('set', this.setMute.bind(this));
+
+    TVSpeaker.setCharacteristic(
+        Characteristic.VolumeControlType,
+        Characteristic.VolumeControlType.RELATIVE
+    );
+
+    TVSpeaker.getCharacteristic(Characteristic.VolumeSelector)
+        .on('set', this.setVolumeSelector.bind(this));
+
 }
 
 RokuTV.prototype.getPowerState = function(callback) {
@@ -210,8 +245,36 @@ RokuTV.prototype.setRemoteKey = function(key, callback) {
 
       this.roku
                 .keypress(value)
-                .then(() => callback(null))
-                .catch(callback);
+                .then(() => callback(null, key));
+}
+
+RokuTV.prototype.setMute = function(value, callback) {
+    console.log("set mute: " + value);
+   
+    this.roku.keypress("VOLUME_MUTE")
+                .then(() => callback(null, value));
+}
+
+RokuTV.prototype.getMute = function(callback) {
+    console.log("getting mute: ");
+
+    //get volume / mute status from roku?
+    callback(null, 0);
+
+}
+
+RokuTV.prototype.setVolumeSelector = function(value, callback) {
+    console.log("Setting volume value: " + value);
+    var char = Characteristic.VolumeSelector;
+    if(value === char.INCREMENT) {
+        this.roku.keypress("VolumeUp")
+                .then(() => callback(null, value));
+    }
+    else if (value === char.DECREMENT) {
+        this.roku.keypress("VolumeDown")
+                .then(() => callback(null, value));
+    }
+    
 }
 
 
