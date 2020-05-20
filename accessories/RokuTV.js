@@ -89,8 +89,10 @@ RokuTV.prototype.setupTV = function() {
     TV.getCharacteristic(global.Characteristic.RemoteKey)
         .on('set', this.setRemoteKey.bind(this));
 
-    // TV.getCharacteristic(global.Characteristic.SleepDiscoveryMode)
-    //     .on('get', this.getSleepDiscoveryMode.bind(this));
+    TV.setCharacteristic(
+        Characteristic.SleepDiscoveryMode,
+        Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
+      );
     
 }
 
