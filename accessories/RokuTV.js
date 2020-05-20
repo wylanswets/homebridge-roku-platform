@@ -49,19 +49,19 @@ RokuTV.prototype.accessoryInfo = function() {
 }
 
 RokuTV.prototype.statusInterval = function() {
-    var service = this.accessory.getService(global.Service.Switch);
+    // var service = this.accessory.getService(global.Service.Switch);
 
-    this.roku.info().then((info) => {
-        var state = false;
-        if(info.powerMode == 'PowerOn') {
-            state = true;
-        }
-        // console.log("state " + state);
-        service
-            .getCharacteristic(Characteristic.On)
-            .setValue(state, null, 'internal');
+    // this.roku.info().then((info) => {
+    //     var state = false;
+    //     if(info.powerMode == 'PowerOn') {
+    //         state = true;
+    //     }
+    //     // console.log("state " + state);
+    //     service
+    //         .getCharacteristic(Characteristic.On)
+    //         .setValue(state, null, 'internal');
 
-    })
+    // })
 
     
 }
@@ -103,8 +103,8 @@ RokuTV.prototype.getPowerState = function(callback) {
     this.roku
     .info().then((info) => {
         var currentState = info.powerMode == 'PowerOn' ? char.ACTIVE : char.INACTIVE;
-
-        callback(currentState);
+        console.log(currentState);
+        callback(null, currentState);
     });
 }
 
@@ -140,7 +140,7 @@ RokuTV.prototype.setPowerState = function(value, callback, context) {
 RokuTV.prototype.getChannel = function(callback) {
     // var char = global.Characteristic.ActiveIdentifier;
     console.log('getting active identifier "Channel"');
-    callback(0);
+    callback(null, 0);
 
 }
 
@@ -152,7 +152,7 @@ RokuTV.prototype.setChannel = function(value, callback) {
 RokuTV.prototype.getConfiguredName = function(callback) {
     // var char = global.Characteristic.ActiveIdentifier;
     console.log('getting configured name');
-    callback("test");
+    callback(null, "test");
 
 }
 
